@@ -5,7 +5,9 @@
 ```sh
 docker pull alpine:3.23
 docker network create jenkins
-docker run --rm -it --name my-alpine --network jenkins -p 9090:9090 alpine:3.23 sh
+docker run --rm -it --name my-alpine \
+    --network jenkins \
+    -p 9090:9090 alpine:3.23 sh
 
 # docker exec -it --user root db9a4c4d530a sh
 
@@ -82,7 +84,20 @@ docker run -d --restart=always \
     -v /var/run/docker.sock:/var/run/docker.sock \
     alpine/socat:1.8.0.0 tcp-listen:2375,fork,reuseaddr \
     unix-connect:/var/run/docker.sock
+
+docker inspect my-alpine-socat | grep IPAddress # 172.18.0.3
+
+# inside the container 
+ping tcp://172.18.0.3:2375
+
+# docker-agent-alpine
+# jenkins/agent:jdk21
 ```
+
+- <img src="./_forReadme/image copy 3.png" />
+- <img src="./_forReadme/image copy 4.png" />
+- <img src="./_forReadme/image copy 5.png" />
+- <img src="./_forReadme/image copy 6.png" />
 
 ## References
 
