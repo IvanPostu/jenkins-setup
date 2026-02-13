@@ -85,10 +85,19 @@ docker run -d --restart=always \
     alpine/socat:1.8.0.0 tcp-listen:2375,fork,reuseaddr \
     unix-connect:/var/run/docker.sock
 
+docker run -d --restart=always \
+    --name my-alpine-socat \
+    --network jenkins \
+    -p 2375:2375 \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    alpine/socat:1.8.0.0 tcp-listen:2375,fork,reuseaddr \
+    unix-connect:/var/run/docker.sock
+
 docker inspect my-alpine-socat | grep IPAddress # 172.18.0.3
 
 # inside the container 
 ping tcp://172.18.0.3:2375
+curl http://127.0.0.1:2375
 
 # docker-agent-alpine
 # jenkins/agent:jdk21
