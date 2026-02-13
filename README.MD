@@ -46,6 +46,8 @@ fi
 # hash check
 
 java -jar jenkins.war --httpPort=9090
+# initial password is located here:
+# /home/myuser/.jenkins/secrets/initialAdminPassword
 ```
 
 ## Progress
