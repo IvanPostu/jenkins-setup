@@ -67,46 +67,60 @@ java -jar jenkins.war --httpPort=9090
 - Open successfully build in history
 - Open console output
 
-### Docker node
-
-- add docker plugin
-- <img src="./_forReadme/image copy 2.png" />
-- manage -> configure clouds
+### Docker master/slave
 
 ```sh
-docker pull alpine/socat:1.8.0.0
+docker network create jenkins-network
+docker network rm jenkins-network
 
-# --network jenkins
-docker run -d --restart=always \
-    --name my-alpine-socat \
-    -p 127.0.0.1:2376:2375 \
-    --network jenkins \
+docker pull jenkins/jenkins:2.550-jdk21
+
+docker run -d --name jenkins-master \
+    --restart=always \
+    -p 8080:8080 -p 50000:50000 \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    alpine/socat:1.8.0.0 tcp-listen:2375,fork,reuseaddr \
-    unix-connect:/var/run/docker.sock
+    -v $(which docker):/usr/bin/docker \
+    -v jenkins_home:/var/jenkins_home \
+    -u root \
+    -e DOCKER_GID=$(getent group docker | cut -d: -f3) \
+    --network jenkins-network \
+    jenkins/jenkins:2.550-jdk21
 
-docker run -d --restart=always \
-    --name my-alpine-socat \
-    --network jenkins \
-    -p 2375:2375 \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    alpine/socat:1.8.0.0 tcp-listen:2375,fork,reuseaddr \
-    unix-connect:/var/run/docker.sock
+docker logs jenkins-master
 
-docker inspect my-alpine-socat | grep IPAddress # 172.18.0.3
+# Install plugins: Docker and Docker pipeline
+# Create node
 
-# inside the container 
-ping tcp://172.18.0.3:2375
-curl http://127.0.0.1:2375
+# setup slave container
+docker pull jenkins/inbound-agent:alpine3.23-jdk21
 
-# docker-agent-alpine
-# jenkins/agent:jdk21
+docker run -d --name docker-agent1 \
+    --network jenkins-network \
+    --restart=always \
+    -e JENKINS_AGENT_NAME="docker-agent1" \
+    -e JENKINS_SECRET="a13f72722d8e2e4af59d3166bed290b60dabf9749ff3911a7f45ba1dbadc9501" \
+    -e JENKINS_URL="http://jenkins-master:8080" \
+    -u root \
+    jenkins/inbound-agent:alpine3.23-jdk21
+
+# connect to the agent
+docker exec -it docker-agent1 bash
+apk update
+
+# option for regular image/container
+curl -sO http://jenkins-master:8080/jnlpJars/agent.jar
+java -jar agent.jar -url http://jenkins-master:8080/ -secret "$JENKINS_SECRET" -name "docker-agent1" -webSocket -workDir "/home/jenkins/agent"
 ```
 
 - <img src="./_forReadme/image copy 3.png" />
+- Stop using master for builds
 - <img src="./_forReadme/image copy 4.png" />
+- Add new agent
 - <img src="./_forReadme/image copy 5.png" />
 - <img src="./_forReadme/image copy 6.png" />
+- <img src="./_forReadme/image copy 7.png" />
+- Create a helloworld Freestyle project and make sure it was run on agent
+- <img src="./_forReadme/image copy 8.png" />
 
 ## References
 
