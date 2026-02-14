@@ -51,7 +51,7 @@ java -jar agent.jar -url http://jenkins-master:8080/ -secret "$JENKINS_SECRET" -
 - Add new agent
 - <img src="./_forReadme/image copy 5.png" />
 - <img src="./_forReadme/image copy 6.png" />
-- <img src="./_forReadme/image copy 7.png" />
+- <img src="./_forReadme/image.png" />
 - Create a helloworld Freestyle project and make sure it was run on agent
 - <img src="./_forReadme/image copy 8.png" />
 
