@@ -76,6 +76,64 @@ java -jar agent.jar -url http://jenkins-master:8080/ -secret "$JENKINS_SECRET" -
 
 - <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent>
 
+## Docker Containers as Jenkins Build Agents
+
+Expose docker to the same network as jenkins, change docker service
+
+```sh
+"unix:///var/run/docker.sock"
+"tcp://127.0.0.1:4243" # or, will need additional setup for container to see it on host's host's
+# "tcp://0.0.0.0:4243" # don't forget to adjust firewall settings
+```
+
+- Test: `curl http://127.0.0.1:4243/version`
+- Test: `wget -qO- http://127.0.0.1:4243/version`
+- Test: `curl --unix-socket /var/run/docker.sock http://localhost/version`
+- In jenkins install `Docker` plugin
+- <img src="./_forReadme/image copy 11.png" />
+
+- Access docker api from container:
+
+```sh
+# doesn't work on rootless docker!!!
+# docker run --rm -it --name my-alpine \
+#     --privileged \
+#     --user root \
+#     --network jenkins-network \
+#     -v /var/run/docker.sock:/var/run/docker.sock \
+#     -e DOCKER_HOST=unix:///var/run/docker.sock \
+#     alpine:3.23 sh
+
+# ls -n /var/run/docker.sock
+# apk update
+# apk add curl
+# curl --unix-socket /var/run/docker.sock http://localhost/version
+
+docker pull docker:29.2.1-dind
+docker run --privileged --name my-dind-container -d docker:29.2.1-dind
+
+# use ip got via: ip addr
+docker exec -it \
+  -e DOCKER_HOST="tcp://192.168.0.3:4243" \
+  my-dind-container sh
+
+# if you run inside the container : docker ps, it works
+```
+
+- setup ssh <img src="./_forReadme/image copy 12.png" />
+- setup JNLP
+  - image: `jenkinsci/jnlp-slave:4.3-1` (runs java 8, got error due to too old java version)
+  - image: `jenkins/inbound-agent:alpine3.23-jdk21` (WORKED!!!)
+  - label: `docker-jnlp-slave`
+  - <img src="./_forReadme/image copy 13.png" />
+  - <img src="./_forReadme/image copy 14.png" />
+  - <img src="./_forReadme/image copy 15.png" />
+  - <img src="./_forReadme/image copy 16.png" />
+
+```sh
+docker pull jenkinsci/jnlp-slave:4.3-1 # java 8 incompatible with jenkins's newer version of java, use jenkins/inbound-agent:alpine3.23-jdk21 instead
+```
+
 ## Manual setup
 
 ```sh
@@ -136,3 +194,5 @@ java -jar jenkins.war --httpPort=9090
 1. [What Are The Steps To Install Jenkins On Linux Using A War File?](https://manage.accuwebhosting.com/knowledgebase/5378/What-Are-The-Steps-To-Install-Jenkins-On-Linux-Using-A-War-File.html)
 1. <https://github.com/devopsjourney1/jenkins-101>
 1. <https://dev.to/behainguyen/cicd-06-jenkins-accessing-private-github-repos-using-ssh-keys-313b>
+1. <https://www.youtube.com/watch?v=yb6DodK6mbg>
+1. <https://medium.com/@moshedana058/understanding-docker-in-docker-dind-method-a-comprehensive-guide-45ab416c1a53>
