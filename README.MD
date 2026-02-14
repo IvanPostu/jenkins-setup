@@ -55,6 +55,13 @@ java -jar agent.jar -url http://jenkins-master:8080/ -secret "$JENKINS_SECRET" -
 - Create a helloworld Freestyle project and make sure it was run on agent
 - <img src="./_forReadme/image copy 8.png" />
 
+## Pipeline example
+
+- Create a new pipeline
+- Copy/paste `Jenkinsfile.template`
+- Run and open `Pipeline overview`
+- <img src="./_forReadme/image copy.png" />
+
 ## Manual setup
 
 ```sh
@@ -110,6 +117,7 @@ java -jar jenkins.war --httpPort=9090
 ## References
 
 1. <https://www.youtube.com/watch?v=YGAvqJFr_yM>
+1. <https://www.youtube.com/watch?v=6YZvp2GwT0A>
 1. [Jenkins War Packages (to download war archives)](https://get.jenkins.io/war-stable/)
 1. [What Are The Steps To Install Jenkins On Linux Using A War File?](https://manage.accuwebhosting.com/knowledgebase/5378/What-Are-The-Steps-To-Install-Jenkins-On-Linux-Using-A-War-File.html)
 1. <https://github.com/devopsjourney1/jenkins-101>
