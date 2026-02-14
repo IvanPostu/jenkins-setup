@@ -62,6 +62,20 @@ java -jar agent.jar -url http://jenkins-master:8080/ -secret "$JENKINS_SECRET" -
 - Run and open `Pipeline overview`
 - <img src="./_forReadme/image copy.png" />
 
+## Pipeline from github example
+
+- create new pipeline
+- <img src="./_forReadme/image copy 2.png" />
+- <img src="./_forReadme/image copy 7.png" />
+- to avoid the error below:
+- <img src="./_forReadme/image copy 9.png" />
+- fix (on master and slaves): `ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts`
+- <img src="./_forReadme/image copy 10.png" />
+
+## Generate ssh key for github
+
+- <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent>
+
 ## Manual setup
 
 ```sh
@@ -121,3 +135,4 @@ java -jar jenkins.war --httpPort=9090
 1. [Jenkins War Packages (to download war archives)](https://get.jenkins.io/war-stable/)
 1. [What Are The Steps To Install Jenkins On Linux Using A War File?](https://manage.accuwebhosting.com/knowledgebase/5378/What-Are-The-Steps-To-Install-Jenkins-On-Linux-Using-A-War-File.html)
 1. <https://github.com/devopsjourney1/jenkins-101>
+1. <https://dev.to/behainguyen/cicd-06-jenkins-accessing-private-github-repos-using-ssh-keys-313b>
